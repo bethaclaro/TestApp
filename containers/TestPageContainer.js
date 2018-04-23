@@ -1,11 +1,22 @@
 import React, { Component } from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 
 export default class TestPageContainer extends Component {
     render() {
-        return <React.Fragment>
-            <Text>Hello there</Text>
-        </React.Fragment>
+        return (
+            <View style={styles.container}>
+                <Text>Hello there</Text>
+            </View>
+        )
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+  });
