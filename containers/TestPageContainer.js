@@ -1,16 +1,32 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { TabNavigator } from 'react-navigation';
 
-
-export default class TestPageContainer extends Component {
+class ParkingCalcScreen extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text>Hello there</Text>
+                <Text>Parking Calculator</Text>
             </View>
         )
     }
 }
+
+class GasCalcScreen extends Component {
+    render() {
+        return (
+            <View style={styles.container}>
+                <Text>Gas Calculator</Text>
+            </View>
+        )
+    }
+}
+
+export default TabNavigator({
+    Parking: {screen: ParkingCalcScreen},
+    Gas: {screen: GasCalcScreen}
+})
+
 
 const styles = StyleSheet.create({
     container: {
