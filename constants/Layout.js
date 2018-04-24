@@ -7,6 +7,7 @@ export default {
   window: {
     width,
     height,
+    flex: 1
   },
   isSmallDevice: width < 375,
 };

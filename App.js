@@ -4,8 +4,9 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import stores from './stores'
+import layout from './constants/Layout';
 
-import MainContainer from './containers/MainContainer';
+import TestPageContainer from './containers/TestPageContainer';
 
 export default class App extends React.Component {
   state = {
@@ -25,7 +26,7 @@ export default class App extends React.Component {
       return (
 
         <Provider {...stores}>
-          <MainContainer/>
+          <TestPageContainer />
           {/* <View style={styles.container}>
             {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
             {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
@@ -58,14 +59,3 @@ export default class App extends React.Component {
     this.setState({ isLoadingComplete: true });
   };
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  statusBarUnderlay: {
-    height: 24,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  },
-});
