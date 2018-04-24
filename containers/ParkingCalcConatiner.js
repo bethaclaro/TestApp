@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { observable, computed } from 'mobx'
-import { observer } from 'mobx-react/native';
-import { Button as NButton, SafeAreaView, Text, ScrollView, StyleSheet, View, Modal } from 'react-native';
-import defaultStyles from '../constants/Styles';
-import { Button, FormLabel, FormInput } from 'react-native-elements';
-import TimePicker from 'react-native-simple-time-picker';
+import { observer } from 'mobx-react/native'
+import { Button as NButton, TextInput,
+    SafeAreaView, Text, ScrollView, StyleSheet, View, Modal } from 'react-native'
+import defaultStyles from '../constants/Styles'
+import { Button, FormLabel, FormInput } from 'react-native-elements'
+import TimePicker from 'react-native-simple-time-picker'
+import moment from 'moment'
 
 @observer
 export default class ParkingCalcContainer extends Component {
@@ -16,35 +18,50 @@ export default class ParkingCalcContainer extends Component {
     @observable isModalVisible = false
     @observable isTimeIn = true
 
-    // @observable totalParkingFee = 0.00
-
     @observable firstN = 0
     @observable firstNHrsFee = 0
     @observable succeedingFee = 0
-    
+    @observable durationHrs = 0
+    // @observable parkingFee = 0.00
+
+    @computed get parkingFee() {
+        if(this.selectedTimeOutHours==0)
+            return this.padZeros(0,2) 
+
+        let d = moment(this.timeOut, "HH:mm").diff(moment(this.timeIn, "HH:mm"), "hours")
+        let amt = ((d - Number(this.firstN)) * Number(this.succeedingFee)) + Number(this.firstNHrsFee)
+
+        return amt
+    }
 
     @computed get timeIn() {
-        return this.selectedTimeInHours.toString() + ":" + this.selectedTimeInMinute.toString()
+        let h = this.padZeros(this.selectedTimeInHours, 2)
+        let m = this.padZeros(this.selectedTimeInMinute, 2)
+
+        return h + ":" + m
+        // return this.selectedTimeInHours.toString() + ":" + this.selectedTimeInMinute.toString()
     }
 
     @computed get timeOut() {
-        return this.selectedTimeOutHours.toString() + ":" + this.selectedTimeOutMinute.toString()
-    }
+        let h = this.padZeros(this.selectedTimeOutHours, 2)
+        let m = this.padZeros(this.selectedTimeOutMinute, 2)
 
-    @computed get parkingFee() {
-        return this.firstNHrsFee * 6
+        return h + ":" + m
     }
 
     constructor(props) {
         super(props)
         this.onButtonPressHandler = this.onButtonPressHandler.bind(this) 
-        this.onValueChange = this.onValueChange.bind(this)
         this.onTimeInPress = this.onTimeInPress.bind(this)
         this.onTimeOutPress = this.onTimeOutPress.bind(this)
         this.onTimePickerChange = this.onTimePickerChange.bind(this)
         this.onTimeSelected = this.onTimeSelected.bind(this)
     }
 
+    padZeros(num,dig) {
+    	return Array(Math.max(dig - String(num).length + 1, 0)).join(0) + num;
+    }
+    
     onTimeInPress(e) {
         this.isTimeIn = true
         this.isModalVisible = true
@@ -65,10 +82,14 @@ export default class ParkingCalcContainer extends Component {
         }
     }
 
-    onValueChange(e) {
-    }
-
     onButtonPressHandler(e) {
+        this.selectedTimeInHours = 0
+        this.selectedTimeInMinute = 0
+        this.selectedTimeOutHours = 0
+        this.selectedTimeOutMinute = 0
+        this.firstN = 0
+        this.firstNHrsFee = 0
+        this.succeedingFee = 0
     }
 
     onTimeSelected(e) {
@@ -99,15 +120,15 @@ export default class ParkingCalcContainer extends Component {
                     
                     <FormLabel>First N hours</FormLabel>
                     <FormInput autoFocus={true} keyboardAppearance="dark"
-                        keyboardType="numeric" onChange={this.onValueChange}></FormInput>
+                        keyboardType="numeric" onChangeText={(text)=>{this.firstN=text}}></FormInput>
 
                     <FormLabel>First N hours fee</FormLabel>
                     <FormInput keyboardAppearance="dark"
-                        keyboardType="numeric" onChange={this.onValueChange}></FormInput>
+                        keyboardType="numeric" onChangeText={(text)=>{this.firstNHrsFee=text}}></FormInput>
                     
                     <FormLabel>Succeeding hours fee</FormLabel>
                     <FormInput keyboardAppearance="dark"
-                        keyboardType="numeric" onChange={this.onValueChange}></FormInput>
+                        keyboardType="numeric" onChangeText={(text)=>{this.succeedingFee=text}}></FormInput>
 
                     <View style={{flex: 1, flexDirection: 'row', padding: 10}}>
                         <FormLabel>Time In</FormLabel>
@@ -130,7 +151,7 @@ export default class ParkingCalcContainer extends Component {
                     </View>
 
                     <Button style={localStyle.button}
-                        title="Compute" backgroundColor="#137EA8" onPress={this.onButtonPressHandler} />
+                        title="Clear" backgroundColor="#137EA8" onPress={this.onButtonPressHandler} />
 
                 </ScrollView>
 
