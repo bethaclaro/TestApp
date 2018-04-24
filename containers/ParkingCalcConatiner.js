@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { observable } from 'mobx'
+import { observable, computed } from 'mobx'
 import { observer } from 'mobx-react/native';
-import { Button as NButton, SafeAreaView, Text, ScrollView, StyleSheet, View } from 'react-native';
+import { Button as NButton, SafeAreaView, Text, ScrollView, StyleSheet, View, Modal } from 'react-native';
 import defaultStyles from '../constants/Styles';
 import { Button, FormLabel, FormInput } from 'react-native-elements';
 import TimePicker from 'react-native-simple-time-picker';
@@ -13,62 +13,86 @@ export default class ParkingCalcContainer extends Component {
     @observable selectedTimeInMinute = 0
     @observable selectedTimeOutHours = 0
     @observable selectedTimeOutMinute = 0
-    @observable isTimeInOverlayVisible = false
-    @observable isTimeOutOverlayVisible = false
-    @observable totalParkingFee = 0.00
+    @observable isModalVisible = false
+    @observable isTimeIn = true
+
+    // @observable totalParkingFee = 0.00
+
+    @observable firstN = 0
+    @observable firstNHrsFee = 0
+    @observable succeedingFee = 0
+    
+
+    @computed get timeIn() {
+        return this.selectedTimeInHours.toString() + ":" + this.selectedTimeInMinute.toString()
+    }
+
+    @computed get timeOut() {
+        return this.selectedTimeOutHours.toString() + ":" + this.selectedTimeOutMinute.toString()
+    }
+
+    @computed get parkingFee() {
+        return this.firstNHrsFee * 6
+    }
 
     constructor(props) {
         super(props)
         this.onButtonPressHandler = this.onButtonPressHandler.bind(this) 
         this.onValueChange = this.onValueChange.bind(this)
-        this.onTimeInChange = this.onTimeInChange.bind(this)
-        this.onTimeOutChange = this.onTimeOutChange.bind(this)
         this.onTimeInPress = this.onTimeInPress.bind(this)
         this.onTimeOutPress = this.onTimeOutPress.bind(this)
+        this.onTimePickerChange = this.onTimePickerChange.bind(this)
+        this.onTimeSelected = this.onTimeSelected.bind(this)
     }
 
     onTimeInPress(e) {
-        this.isTimeInOverlayVisible = !this.isTimeInOverlayVisible
+        this.isTimeIn = true
+        this.isModalVisible = true
     }
 
     onTimeOutPress(e) {
-        this.isTimeOutOverlayVisible = !this.isTimeOutOverlayVisible
+        this.isTimeIn = false
+        this.isModalVisible = true
     }
 
-    onTimeOutChange(h, m) {
-        this.selectedTimeOutHours = h
-        this.selectedTimeOutMinute = m
-    }
-    onTimeInChange(h,m) {
-        this.selectedTimeInHours = h
-        this.selectedTimeInMinute = m
+    onTimePickerChange(h, m) {
+        if(this.isTimeIn) {
+            this.selectedTimeInHours = h
+            this.selectedTimeInMinute = m
+        } else {
+            this.selectedTimeOutHours = h
+            this.selectedTimeOutMinute = m
+        }
     }
 
     onValueChange(e) {
     }
 
     onButtonPressHandler(e) {
-        this.totalParkingFee = 10000.00
     }
 
-    renderOverlay() {
-        {/* <Overlay isVisible={this.isTimeInOverlayVisible} 
-                    windowBackgroundColor="rgba(255,255,255, 0.5)"
-                    width="auto" height="auto">
-                    <NButton title="Press me to dismiss" onPress={this.onTimeInPress} />
-                </Overlay> */}
+    onTimeSelected(e) {
+        this.isModalVisible = false
     }
 
     render() {
         return (
-            <SafeAreaView style={defaultStyles.container} keyboardShouldPersistTaps={false}>
+            <SafeAreaView style={defaultStyles.container} keyboardShouldPersistTaps={false} >
+
+                <Modal visible={this.isModalVisible}>
+                    <SafeAreaView>
+                        <TimePicker selectedHour={this.selectedHour} selectedMinute={this.selectedMinute}
+                                onChange={this.onTimePickerChange} />
+                        <Button title="Done" backgroundColor="#137EA8" onPress={this.onTimeSelected} />
+                    </SafeAreaView>
+                </Modal>
 
                 <View style={defaultStyles.header}>
-                    <Text style={{color: '#fff', flex: 1}}>Parking Calculator</Text>
+                    <Text style={{color: '#fff', flex: 1}}>Parking Fee Calculator</Text>
                 </View>
                 
                 <View style={localStyle.result}>
-                    <Text style={localStyle.resultText}>0.00</Text>
+                    <Text style={localStyle.resultText}>{this.parkingFee}</Text>
                 </View>
 
                 <ScrollView style={localStyle.svcontainer}>
@@ -89,9 +113,9 @@ export default class ParkingCalcContainer extends Component {
                         <FormLabel>Time In</FormLabel>
                         <View style={localStyle.timeInputGroup}>
                             <Text style={localStyle.timeText}>
-                                {this.selectedTimeInHours.toString() + ":" + this.selectedTimeInMinute.toString()}
+                                {this.timeIn}
                             </Text>
-                            <Button icon={{name: 'access-time'}} title="Set" onPress={this.onTimeInPress} />
+                            <Button backgroundColor="#137EA8" icon={{name: 'access-time'}} title="Set" onPress={this.onTimeInPress} />
                         </View>
                     </View>
 
@@ -99,25 +123,11 @@ export default class ParkingCalcContainer extends Component {
                         <FormLabel>Time Out</FormLabel>
                         <View style={localStyle.timeInputGroup}>
                             <Text style={localStyle.timeText}>
-                                {this.selectedTimeOutHours.toString() + ":" + this.selectedTimeOutMinute.toString()}
+                                {this.timeOut}
                             </Text>
-                            <Button icon={{name: 'access-time'}} title="Set" onPress={this.onTimeOutPress} />
+                            <Button backgroundColor="#137EA8" icon={{name: 'access-time'}} title="Set" onPress={this.onTimeOutPress} />
                         </View>
                     </View>
-
-                    {/* <NButton title="Set Time In" onPress={this.onTimeInPress} /> */}
-                    
-                    {/* <FormInput keyboardAppearance="dark"
-                        keyboardType="numeric" onChange={this.onValueChange}></FormInput> */}
-                    {/* <TimePicker height={50} selectedHour={this.selectedTimeInHours} selectedMinute={this.selectedTimeInMinute}
-                        onChange={this.onTimeInChange} /> */}
-
-                    {/* <FormLabel>Time Out</FormLabel> */}
-                    
-                    {/* <FormInput keyboardAppearance="dark"
-                        onChange={this.onValueChange}></FormInput> */}
-                    {/* <TimePicker selectedHour={this.selectedTimeOutHours} selectedMinute={this.selectedTimeOutMinute}
-                        onChange={this.onTimeOutChange} /> */}
 
                     <Button style={localStyle.button}
                         title="Compute" backgroundColor="#137EA8" onPress={this.onButtonPressHandler} />
@@ -151,13 +161,13 @@ const localStyle = StyleSheet.create({
     timeInputGroup: {
         flex: 1,
         flexDirection: 'row',
-        // backgroundColor: 'blue',
-        // padding: 10,
-        // paddingLeft: 30,
         alignItems: 'center',
         justifyContent: 'space-around',
     },
     timeText: {
         color: 'white', fontSize: 20
+    },
+    timeButtons: {
+        backgroundColor: "#137EA8"
     }
 })
