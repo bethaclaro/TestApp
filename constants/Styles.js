@@ -6,17 +6,21 @@ import { StyleSheet, Dimensions } from 'react-native';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: '#5fa6bf',
-        backgroundColor: '#7E0800',
-        // justifyContent: 'center'
+        backgroundColor: '#1a3c40',
       },
     header: {
         height: 50,
         paddingTop: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        flexDirection: 'row'
     },
     button: {
         backgroundColor: '#137EA8',
         width: "50%"
+    },
+    menuContainer: {
+        backgroundColor: '#e4eddb',
+        flex: 1,
+        paddingTop: 15
     }
 })

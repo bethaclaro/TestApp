@@ -3,7 +3,8 @@ import { observable, computed } from 'mobx'
 import { observer } from 'mobx-react/native'
 import { Button as NButton, TextInput,
     SafeAreaView, Text, ScrollView, StyleSheet, View, Modal } from 'react-native'
-import defaultStyles from '../constants/Styles'
+import defStyles from '../constants/Styles'
+import defColors from '../constants/Colors'
 import { Button, FormLabel, FormInput } from 'react-native-elements'
 import TimePicker from 'react-native-simple-time-picker'
 import moment from 'moment'
@@ -22,7 +23,6 @@ export default class ParkingCalcContainer extends Component {
     @observable firstNHrsFee = 0
     @observable succeedingFee = 0
     @observable durationHrs = 0
-    // @observable parkingFee = 0.00
 
     @computed get parkingFee() {
         if(this.selectedTimeOutHours==0)
@@ -56,6 +56,7 @@ export default class ParkingCalcContainer extends Component {
         this.onTimeOutPress = this.onTimeOutPress.bind(this)
         this.onTimePickerChange = this.onTimePickerChange.bind(this)
         this.onTimeSelected = this.onTimeSelected.bind(this)
+        this.onPressMenu = this.onPressMenu.bind(this)
     }
 
     padZeros(num,dig) {
@@ -96,19 +97,24 @@ export default class ParkingCalcContainer extends Component {
         this.isModalVisible = false
     }
 
+    onPressMenu(e) {
+        this.props.navigation.navigate('DrawerToggle')
+    }
+
     render() {
         return (
-            <SafeAreaView style={defaultStyles.container} keyboardShouldPersistTaps={false} >
+            <SafeAreaView style={defStyles.container} keyboardShouldPersistTaps={false} >
 
-                <Modal visible={this.isModalVisible}>
-                    <SafeAreaView>
+                <Modal visible={this.isModalVisible} transparent={true} >
+                    <SafeAreaView style={localStyle.timePicker}>
                         <TimePicker selectedHour={this.selectedHour} selectedMinute={this.selectedMinute}
                                 onChange={this.onTimePickerChange} />
-                        <Button title="Done" backgroundColor="#137EA8" onPress={this.onTimeSelected} />
+                        <Button title="Done" backgroundColor={defColors.regularButtonColor} onPress={this.onTimeSelected} />
                     </SafeAreaView>
                 </Modal>
 
-                <View style={defaultStyles.header}>
+                <View style={defStyles.header}>
+                    <Button icon={{name: 'menu'}} backgroundColor={defColors.menuButtonColor} onPress={this.onPressMenu} />
                     <Text style={{color: '#fff', flex: 1}}>Parking Fee Calculator</Text>
                 </View>
                 
@@ -116,10 +122,10 @@ export default class ParkingCalcContainer extends Component {
                     <Text style={localStyle.resultText}>{this.parkingFee}</Text>
                 </View>
 
-                <ScrollView style={localStyle.svcontainer}>
+                <ScrollView style={defStyles.menuContainer}>
                     
                     <FormLabel>First N hours</FormLabel>
-                    <FormInput autoFocus={true} keyboardAppearance="dark"
+                    <FormInput keyboardAppearance="dark"
                         keyboardType="numeric" onChangeText={(text)=>{this.firstN=text}}></FormInput>
 
                     <FormLabel>First N hours fee</FormLabel>
@@ -136,7 +142,7 @@ export default class ParkingCalcContainer extends Component {
                             <Text style={localStyle.timeText}>
                                 {this.timeIn}
                             </Text>
-                            <Button backgroundColor="#137EA8" icon={{name: 'access-time'}} title="Set" onPress={this.onTimeInPress} />
+                            <Button backgroundColor={defColors.regularButtonColor} icon={{name: 'access-time'}} title="Set" onPress={this.onTimeInPress} />
                         </View>
                     </View>
 
@@ -146,12 +152,12 @@ export default class ParkingCalcContainer extends Component {
                             <Text style={localStyle.timeText}>
                                 {this.timeOut}
                             </Text>
-                            <Button backgroundColor="#137EA8" icon={{name: 'access-time'}} title="Set" onPress={this.onTimeOutPress} />
+                            <Button backgroundColor={defColors.regularButtonColor} icon={{name: 'access-time'}} title="Set" onPress={this.onTimeOutPress} />
                         </View>
                     </View>
 
                     <Button style={localStyle.button}
-                        title="Clear" backgroundColor="#137EA8" onPress={this.onButtonPressHandler} />
+                        title="Clear" backgroundColor={defColors.regularButtonColor} onPress={this.onButtonPressHandler} />
 
                 </ScrollView>
 
@@ -161,16 +167,11 @@ export default class ParkingCalcContainer extends Component {
 }
 
 const localStyle = StyleSheet.create({
-    svcontainer: {
-        backgroundColor: 'black',
-        flex: 1,
-        paddingTop: 15
-    },
     button: {
         paddingTop: 20
     },
     result: {
-        backgroundColor: '#9f9f9f',
+        backgroundColor: '#307672',
         height: 80,
         alignItems: 'center',
         justifyContent: 'center',
@@ -186,9 +187,15 @@ const localStyle = StyleSheet.create({
         justifyContent: 'space-around',
     },
     timeText: {
-        color: 'white', fontSize: 20
+        color: '#1a3c40', fontSize: 20
     },
     timeButtons: {
         backgroundColor: "#137EA8"
+    },
+    timePicker: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.95)'
     }
 })

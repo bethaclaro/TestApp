@@ -1,8 +1,8 @@
-import { TabNavigator } from 'react-navigation';
+import { TabNavigator, DrawerNavigator } from 'react-navigation';
 import GasCalcContainer from './GasCalcContainer';
 import ParkingCalcContainer from './ParkingCalcConatiner';
 
-export default TabNavigator({
+export default DrawerNavigator({
     Parking: {screen: ParkingCalcContainer},
     Gas: {screen: GasCalcContainer}
 })
