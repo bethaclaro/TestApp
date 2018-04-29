@@ -3,6 +3,6 @@ import GasCalcContainer from './GasCalcContainer';
 import ParkingCalcContainer from './ParkingCalcConatiner';
 
 export default DrawerNavigator({
-    Parking: {screen: ParkingCalcContainer},
-    Gas: {screen: GasCalcContainer}
+    Gas: {screen: GasCalcContainer},
+    Parking: {screen: ParkingCalcContainer}
 })

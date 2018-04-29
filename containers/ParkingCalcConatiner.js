@@ -39,7 +39,6 @@ export default class ParkingCalcContainer extends Component {
         let m = this.padZeros(this.selectedTimeInMinute, 2)
 
         return h + ":" + m
-        // return this.selectedTimeInHours.toString() + ":" + this.selectedTimeInMinute.toString()
     }
 
     @computed get timeOut() {
